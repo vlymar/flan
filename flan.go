@@ -19,8 +19,6 @@ $ flan lsof
 lsof -i :$port
 */
 
-//type AnsiCode string
-
 // https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 // https://github.com/fatih/color
 
@@ -60,8 +58,7 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "no args passed")
-		os.Exit(1)
+		log.Fatal("no args passed")
 	}
 
 	colorLessEnv := [7]string{
@@ -78,7 +75,7 @@ func main() {
 
 	manCmd := exec.Command("man", "-P", "cat", args[0])
 
-	manCmd.Stderr = os.Stderr // do man or less write to stdout?
+	manCmd.Stderr = os.Stderr
 	manOut, err := manCmd.Output()
 	if err != nil {
 		log.Fatal(err)
@@ -88,7 +85,7 @@ func main() {
 	lessIn, _ := lessCmd.StdinPipe()
 	lessCmd.Env = env
 	lessCmd.Stdout = os.Stdout
-	lessCmd.Stderr = os.Stderr // do man or less write to stdout?
+	lessCmd.Stderr = os.Stderr
 
 	if err := lessCmd.Start(); err != nil {
 		log.Fatal(err)
