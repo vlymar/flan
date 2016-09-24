@@ -27,12 +27,13 @@ func main() {
 	}
 
 	lessCmd := lessCommand(os.Environ(), os.Stdout, os.Stderr)
-	if err := lessCmd.Start(); err != nil {
-		log.Fatal(err)
-	}
 
 	lessIn, err := lessCmd.StdinPipe()
 	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := lessCmd.Start(); err != nil {
 		log.Fatal(err)
 	}
 
