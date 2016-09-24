@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -46,25 +45,4 @@ func flanpage(arg string) error {
 func flannotate() error {
 	fmt.Println("flannotating lol")
 	return nil
-}
-
-func main() {
-	var err error = nil
-
-	args := os.Args[1:]
-
-	switch len(args) {
-	case 0:
-		err = flannotate()
-	case 1:
-		err = flanpage(args[0])
-	default:
-		log.Fatal("Pass 1 or 0 args")
-	}
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	os.Exit(0)
 }
