@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 /*
@@ -43,6 +45,29 @@ func flanpage(arg string) error {
 }
 
 func flannotate() error {
-	fmt.Println("flannotating lol")
+	leader := color("> ", bold, green)
+
+	prompt := fmt.Sprintf("Input a command to flannotate:\n%s", leader)
+	fmt.Print(color(prompt, bold, blue))
+
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	cmd := strings.TrimSpace(input)
+
+	if err != nil {
+		return err
+	}
+
+	prompt = fmt.Sprintf("Input your flannotation for %s:\n%s",
+		color(cmd, bold, red), leader)
+
+	fmt.Print(color(prompt, bold, blue))
+
+	input, err = reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(color("goodbye", magenta))
 	return nil
 }

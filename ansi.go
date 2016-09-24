@@ -35,11 +35,15 @@ const (
 	white
 )
 
-func fmtAnsi(codes ...AnsiCode) string {
+func ansi(codes ...AnsiCode) string {
 	codeStrings := make([]string, len(codes))
 	for i, v := range codes {
 		codeStrings[i] = strconv.Itoa(int(v))
 	}
 	delimitedCodes := strings.Join(codeStrings, ";")
 	return fmt.Sprintf("%s[%sm", esc, delimitedCodes)
+}
+
+func color(s string, codes ...AnsiCode) string {
+	return fmt.Sprintf("%s%v%s", ansi(codes...), s, ansi(reset))
 }
