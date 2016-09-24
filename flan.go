@@ -68,6 +68,6 @@ func flannotate() error {
 		return err
 	}
 
-	fmt.Println(color("goodbye", magenta))
+	fmt.Println(color("🍮", magenta))
 	return nil
 }
