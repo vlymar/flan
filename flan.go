@@ -46,20 +46,25 @@ func flanpage(arg string) error {
 
 func flannotate() error {
 	leader := color("> ", bold, green)
+	commands, err := ReadFlanFile(flanFile)
+	if err != nil {
+		return err
+	}
 
 	prompt := fmt.Sprintf("Input a command to flannotate:\n%s", leader)
 	fmt.Print(color(prompt, bold, blue))
 
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
-	cmd := strings.TrimSpace(input)
 
 	if err != nil {
 		return err
 	}
 
+	cmd_str := strings.TrimSpace(input)
+
 	prompt = fmt.Sprintf("Input your flannotation for %s:\n%s",
-		color(cmd, bold, red), leader)
+		color(cmd_str, bold, red), leader)
 
 	fmt.Print(color(prompt, bold, blue))
 
@@ -67,6 +72,8 @@ func flannotate() error {
 	if err != nil {
 		return err
 	}
+
+	WriteFlanFile(commands, flanFile)
 
 	fmt.Println(color("🍮", magenta))
 	return nil
