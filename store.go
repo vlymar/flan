@@ -8,7 +8,7 @@ import (
 
 const flanFile = "~/.flan"
 
-type Commands map[string][]string
+type Commands map[string][][]string
 
 func ReadFlanFile(path string) (Commands, error) {
 	dat, err := ioutil.ReadFile(path)

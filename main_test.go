@@ -18,15 +18,24 @@ func TestReadFlanFile(t *testing.T) {
 		t.Error("expected 2 commands, got", len(commands))
 	}
 
-	cmd_1_anno, prs := commands["cmd_1"]
+	cmd_1_annos, prs := commands["cmd_1"]
 	if !prs {
 		t.Error("cmd_1 not in commands map")
 	}
-	if cmd_1_anno[0] != "cmd_1 anno" {
-		t.Error("missing annotation for cmd_1")
+	if len(cmd_1_annos) != 2 {
+		t.Error("cmd_1 does not have 2 annotations in commands map")
 	}
-	if cmd_1_anno[1] != "cmd_1 example" {
-		t.Error("missing example for cmd_1")
+	if cmd_1_annos[0][0] != "cmd_1 anno1" {
+		t.Error("missing annotation1 for cmd_1")
+	}
+	if cmd_1_annos[0][1] != "cmd_1 example1" {
+		t.Error("missing example1 for cmd_1")
+	}
+	if cmd_1_annos[1][0] != "cmd_1 anno2" {
+		t.Error("missing annotation2 for cmd_1")
+	}
+	if cmd_1_annos[1][1] != "cmd_1 example2" {
+		t.Error("missing example2 for cmd_1")
 	}
 
 	commands, err = ReadFlanFile("non_existant_file.xyz")
@@ -42,9 +51,13 @@ func TestReadFlanFile(t *testing.T) {
 
 func TestWriteFlanFile(t *testing.T) {
 	tmpfile := "testdata/tmpfile.json"
+	cmd1 := make([][]string, 1)
+	cmd1[0] = []string{"a1", "a2"}
+	cmd2 := make([][]string, 1)
+	cmd2[0] = []string{"b1", "b2"}
 	commands := Commands{
-		"a": []string{"a1", "a2"},
-		"b": []string{"b1", "b2"},
+		"a": cmd1,
+		"b": cmd2,
 	}
 
 	if err := WriteFlanFile(commands, tmpfile); err != nil {
@@ -57,7 +70,7 @@ func TestWriteFlanFile(t *testing.T) {
 		t.Error(err)
 	}
 
-	if string(dat) != `{"a":["a1","a2"],"b":["b1","b2"]}` {
+	if string(dat) != `{"a":[["a1","a2"]],"b":[["b1","b2"]]}` {
 		t.Error("WriteFlanFile wrote unexpected value:", string(dat))
 	}
 }
