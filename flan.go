@@ -16,6 +16,7 @@ $ flan lsof
 lsof -i :$port
 */
 
+// TODO: ctrl-c'ing out of here breaks prompt for a sec
 func flanpage(arg string) error {
 	manOut, err := manOutput(arg, os.Stderr)
 	if err != nil {
@@ -33,7 +34,23 @@ func flanpage(arg string) error {
 		return err
 	}
 
-	lessIn.Write([]byte("future flannotation...\n\n"))
+	commands, err := ReadFlanFile()
+	if err != nil {
+		return err
+	}
+	flannotations, prs := commands[arg]
+	if prs {
+		for _, flanno := range flannotations {
+			// TODO: better formatting, fix color escaping
+			lessIn.Write([]byte("$ "))
+			lessIn.Write([]byte(flanno[0]))
+			lessIn.Write([]byte("\n"))
+			lessIn.Write([]byte("# "))
+			lessIn.Write([]byte(flanno[1]))
+			lessIn.Write([]byte("\n\n"))
+		}
+	}
+
 	lessIn.Write(manOut)
 	lessIn.Close()
 
@@ -46,12 +63,8 @@ func flanpage(arg string) error {
 
 func flannotate() error {
 	leader := color("> ", bold, green)
-	flanPath, err := flanPath()
-	if err != nil {
-		return err
-	}
 
-	commands, err := ReadFlanFile(flanPath)
+	commands, err := ReadFlanFile()
 	if err != nil {
 		return err
 	}
@@ -81,7 +94,7 @@ func flannotate() error {
 	cmdAnno := strings.TrimSpace(input)
 
 	Store(cmdName, cmdEx, cmdAnno, commands)
-	if err = WriteFlanFile(commands, flanPath); err != nil {
+	if err = WriteFlanFile(commands); err != nil {
 		return err
 	}
 

@@ -23,7 +23,21 @@ func Store(cmd, example, anno string, commands Commands) {
 	commands[cmd] = flannotations
 }
 
-func ReadFlanFile(path string) (Commands, error) {
+func ReadFlanFile() (Commands, error) {
+	flanPath, err := flanPath()
+	if err != nil {
+		return nil, err
+	}
+
+	commands, err := ReadFlanFileFromPath(flanPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return commands, nil
+}
+
+func ReadFlanFileFromPath(path string) (Commands, error) {
 	dat, err := ioutil.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -39,7 +53,18 @@ func ReadFlanFile(path string) (Commands, error) {
 	return commands, nil
 }
 
-func WriteFlanFile(commands Commands, path string) error {
+func WriteFlanFile(commands Commands) error {
+	flanPath, err := flanPath()
+	if err != nil {
+		return err
+	}
+	if err := WriteFlanFileToPath(commands, flanPath); err != nil {
+		return err
+	}
+	return nil
+}
+
+func WriteFlanFileToPath(commands Commands, path string) error {
 	b, err := json.Marshal(commands)
 	if err != nil {
 		return err

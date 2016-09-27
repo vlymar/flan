@@ -10,8 +10,8 @@ import (
 
 const testFlanFile = "testdata/flanfixture.json"
 
-func TestReadFlanFile(t *testing.T) {
-	commands, err := ReadFlanFile(testFlanFile)
+func TestReadFlanFileFromPath(t *testing.T) {
+	commands, err := ReadFlanFileFromPath(testFlanFile)
 	if err != nil {
 		t.Error(err)
 	}
@@ -40,13 +40,13 @@ func TestReadFlanFile(t *testing.T) {
 		t.Error("missing example2 for cmd_1")
 	}
 
-	commands, err = ReadFlanFile("non_existant_file.xyz")
+	commands, err = ReadFlanFileFromPath("non_existant_file.xyz")
 	if err != nil {
 		t.Error(err)
 	}
 
 	if len(commands) != 0 {
-		t.Error(`ReadFlanFile did't return empty Commands map for
+		t.Error(`ReadFlanFileFromPath() did't return empty Commands map for
 		        non existant flonfile`)
 	}
 }
@@ -62,7 +62,7 @@ func TestWriteFlanFile(t *testing.T) {
 		"b": cmd2,
 	}
 
-	if err := WriteFlanFile(commands, tmpfile); err != nil {
+	if err := WriteFlanFileToPath(commands, tmpfile); err != nil {
 		t.Error(err)
 	}
 	defer os.Remove(tmpfile)
@@ -73,7 +73,7 @@ func TestWriteFlanFile(t *testing.T) {
 	}
 
 	if string(dat) != `{"a":[["a1","a2"]],"b":[["b1","b2"]]}` {
-		t.Error("WriteFlanFile wrote unexpected value:", string(dat))
+		t.Error("WriteFlanFileToPath wrote unexpected value:", string(dat))
 	}
 }
 
