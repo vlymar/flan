@@ -46,12 +46,17 @@ func flanpage(arg string) error {
 
 func flannotate() error {
 	leader := color("> ", bold, green)
-	commands, err := ReadFlanFile(flanFile)
+	flanPath, err := flanPath()
 	if err != nil {
 		return err
 	}
 
-	prompt := fmt.Sprintf("Input a command to flannotate:\n%s", leader)
+	commands, err := ReadFlanFile(flanPath)
+	if err != nil {
+		return err
+	}
+
+	prompt := fmt.Sprintf("Input a command example to flannotate:\n%s", leader)
 	fmt.Print(color(prompt, bold, blue))
 
 	reader := bufio.NewReader(os.Stdin)
@@ -61,10 +66,11 @@ func flannotate() error {
 		return err
 	}
 
-	cmd_str := strings.TrimSpace(input)
+	cmdEx := strings.TrimSpace(input)
+	cmdName := strings.Split(cmdEx, " ")[0]
 
-	prompt = fmt.Sprintf("Input your flannotation for %s:\n%s",
-		color(cmd_str, bold, red), leader)
+	prompt = fmt.Sprintf("Input a new flannotation for %s:\n%s",
+		color(cmdEx, bold, red), leader)
 
 	fmt.Print(color(prompt, bold, blue))
 
@@ -72,8 +78,12 @@ func flannotate() error {
 	if err != nil {
 		return err
 	}
+	cmdAnno := strings.TrimSpace(input)
 
-	WriteFlanFile(commands, flanFile)
+	Store(cmdName, cmdEx, cmdAnno, commands)
+	if err = WriteFlanFile(commands, flanPath); err != nil {
+		return err
+	}
 
 	fmt.Println(color("🍮", magenta))
 	return nil

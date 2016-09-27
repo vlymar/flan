@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -73,4 +75,33 @@ func TestWriteFlanFile(t *testing.T) {
 	if string(dat) != `{"a":[["a1","a2"]],"b":[["b1","b2"]]}` {
 		t.Error("WriteFlanFile wrote unexpected value:", string(dat))
 	}
+}
+
+func TestStore(t *testing.T) {
+	commands := make(Commands)
+
+	Store("ls", "ls -a", "list all files", commands)
+	checkStorage("ls", "ls -a", "list all files", commands)
+
+	Store("ls", "ls -l", "list files, showing symlinks", commands)
+	checkStorage("ls", "ls -l", "list files, showing symlinks", commands)
+
+	Store("man", "man cat", "see manpage for cat", commands)
+	checkStorage("man", "man cat", "see manpage for cat", commands)
+}
+
+func checkStorage(cmd, example, anno string, commands Commands) error {
+	flannotations := commands[cmd]
+
+	for _, flanno := range flannotations {
+		stored_ex := flanno[0]
+		if stored_ex == example {
+			stored_anno := flanno[1]
+			if stored_anno == anno {
+				return nil
+			}
+		}
+	}
+
+	return errors.New(fmt.Sprintf("did not find expected flannotation: %v, %v", example, anno))
 }

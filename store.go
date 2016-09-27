@@ -4,11 +4,24 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"os/user"
+	"path"
 )
 
-const flanFile = "~/.flan"
+const flanFile = ".flan"
 
 type Commands map[string][][]string
+
+func Store(cmd, example, anno string, commands Commands) {
+	flannotations, prs := commands[cmd]
+	if prs {
+		flannotations = append(flannotations, []string{example, anno})
+	} else {
+		flannotations = make([][]string, 1)
+		flannotations[0] = []string{example, anno}
+	}
+	commands[cmd] = flannotations
+}
 
 func ReadFlanFile(path string) (Commands, error) {
 	dat, err := ioutil.ReadFile(path)
@@ -36,4 +49,15 @@ func WriteFlanFile(commands Commands, path string) error {
 		return err
 	}
 	return nil
+}
+
+func flanPath() (string, error) {
+	usr, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	p := path.Join(usr.HomeDir, flanFile)
+
+	return p, nil
 }
