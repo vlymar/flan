@@ -24,7 +24,7 @@ func lessCommand(userEnv []string, out, err io.WriteCloser) *exec.Cmd {
 
 	env := append(lessEnv[:], userEnv[:]...)
 
-	lessCmd := exec.Command("less")
+	lessCmd := exec.Command("less", "-R")
 	lessCmd.Stdout = os.Stdout
 	lessCmd.Stderr = os.Stderr
 

@@ -8,12 +8,10 @@ import (
 )
 
 /*
-$ lsof -i :6419
-$ flan "list processes sitting on $port$6419$"
-
-$ flan lsof
-# list processes sitting on $port
-lsof -i :$port
+	TODO:
+	- show historical invocations of command
+	- add $arg$ substitution to flannotations
+	- parse commands and allow jumping to relevant flags in manpage with tab?
 */
 
 // TODO: ctrl-c'ing out of here breaks prompt for a sec
@@ -40,13 +38,19 @@ func flanpage(arg string) error {
 	}
 	flannotations, prs := commands[arg]
 	if prs {
+		lessIn.Write([]byte(color("FLANNOTATIONS:\n\n",
+			bold, yellow)))
+
 		for _, flanno := range flannotations {
-			// TODO: better formatting, fix color escaping
-			lessIn.Write([]byte("$ "))
-			lessIn.Write([]byte(flanno[0]))
+
+			lessIn.Write([]byte("     "))
+			lessIn.Write([]byte(color(flanno[1], yellow)))
 			lessIn.Write([]byte("\n"))
-			lessIn.Write([]byte("# "))
-			lessIn.Write([]byte(flanno[1]))
+
+			lessIn.Write([]byte("     "))
+			lessIn.Write([]byte(color("$ ", green)))
+
+			lessIn.Write([]byte(color(flanno[0], red)))
 			lessIn.Write([]byte("\n\n"))
 		}
 	}
