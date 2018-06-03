@@ -14,7 +14,6 @@ import (
 	- parse commands and allow jumping to relevant flags in manpage with tab?
 */
 
-// TODO: ctrl-c'ing out of here breaks prompt for a sec
 func flanpage(arg string) error {
 	manOut, err := manOutput(arg, os.Stderr)
 	if err != nil {
