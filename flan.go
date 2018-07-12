@@ -9,16 +9,15 @@ import (
 
 /*
 	TODO:
+        - if no flannotation or manpage exists, exit without going into less
+
 	- show historical invocations of command
 	- add $arg$ substitution to flannotations
 	- parse commands and allow jumping to relevant flags in manpage with tab?
 */
 
 func flanpage(arg string) error {
-	manOut, err := manOutput(arg, os.Stderr)
-	if err != nil {
-		return err
-	}
+	manOut, manErr := manOutput(arg)
 
 	lessCmd := lessCommand(os.Environ(), os.Stdout, os.Stderr)
 
@@ -52,6 +51,10 @@ func flanpage(arg string) error {
 			lessIn.Write([]byte(color(flanno[0], red)))
 			lessIn.Write([]byte("\n\n"))
 		}
+	}
+
+	if manErr != nil {
+		lessIn.Write([]byte(color("WARNING:\n\n", bold, red)))
 	}
 
 	lessIn.Write(manOut)
