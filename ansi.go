@@ -14,10 +14,10 @@ Useful Reading:
 
 const esc = "\x1b"
 
-type AnsiCode int
+type ansiCode int
 
 const (
-	reset AnsiCode = iota
+	reset ansiCode = iota
 	bold
 	faint
 	italic
@@ -25,7 +25,7 @@ const (
 )
 
 const (
-	black AnsiCode = iota + 30
+	black ansiCode = iota + 30
 	red
 	green
 	yellow
@@ -35,7 +35,7 @@ const (
 	white
 )
 
-func ansi(codes ...AnsiCode) string {
+func ansi(codes ...ansiCode) string {
 	codeStrings := make([]string, len(codes))
 	for i, v := range codes {
 		codeStrings[i] = strconv.Itoa(int(v))
@@ -44,6 +44,6 @@ func ansi(codes ...AnsiCode) string {
 	return fmt.Sprintf("%s[%sm", esc, delimitedCodes)
 }
 
-func color(s string, codes ...AnsiCode) string {
+func color(s string, codes ...ansiCode) string {
 	return fmt.Sprintf("%s%v%s", ansi(codes...), s, ansi(reset))
 }

@@ -70,7 +70,7 @@ func flanpage(arg string) error {
 func flannotate() error {
 	leader := color("> ", bold, green)
 
-	commands, err := ReadFlanFile()
+	cmds, err := readFlanFile()
 	if err != nil {
 		return err
 	}
@@ -99,8 +99,8 @@ func flannotate() error {
 	}
 	cmdAnno := strings.TrimSpace(input)
 
-	Store(cmdName, cmdEx, cmdAnno, commands)
-	if err = WriteFlanFile(commands); err != nil {
+	store(cmdName, cmdEx, cmdAnno, cmds)
+	if err = writeFlanFile(cmds); err != nil {
 		return err
 	}
 

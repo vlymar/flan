@@ -10,62 +10,62 @@ import (
 
 const flanFile = ".flan"
 
-type Commands map[string][][]string
+type commands map[string][][]string
 
-func Store(cmd, example, anno string, commands Commands) {
-	flannotations, prs := commands[cmd]
+func store(cmd, example, anno string, cmds commands) {
+	flannotations, prs := cmds[cmd]
 	if prs {
 		flannotations = append(flannotations, []string{example, anno})
 	} else {
 		flannotations = make([][]string, 1)
 		flannotations[0] = []string{example, anno}
 	}
-	commands[cmd] = flannotations
+	cmds[cmd] = flannotations
 }
 
-func ReadFlanFile() (Commands, error) {
+func readFlanFile() (commands, error) {
 	flanPath, err := flanPath()
 	if err != nil {
 		return nil, err
 	}
 
-	commands, err := ReadFlanFileFromPath(flanPath)
+	cmds, err := readFlanFileFromPath(flanPath)
 	if err != nil {
 		return nil, err
 	}
 
-	return commands, nil
+	return cmds, nil
 }
 
-func ReadFlanFileFromPath(path string) (Commands, error) {
+func readFlanFileFromPath(path string) (commands, error) {
 	dat, err := ioutil.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return make(Commands), nil
+			return make(commands), nil
 		}
 		return nil, err
 	}
 
-	var commands Commands
-	if err := json.Unmarshal(dat, &commands); err != nil {
+	var cmds commands
+	if err := json.Unmarshal(dat, &cmds); err != nil {
 		return nil, err
 	}
-	return commands, nil
+	return cmds, nil
 }
 
-func WriteFlanFile(commands Commands) error {
+func writeFlanFile(cmds commands) error {
 	flanPath, err := flanPath()
 	if err != nil {
 		return err
 	}
-	if err := WriteFlanFileToPath(commands, flanPath); err != nil {
+	if err := writeFlanFileToPath(cmds, flanPath); err != nil {
 		return err
 	}
 	return nil
 }
 
-func WriteFlanFileToPath(commands Commands, path string) error {
-	b, err := json.Marshal(commands)
+func writeFlanFileToPath(cmds commands, path string) error {
+	b, err := json.Marshal(cmds)
 	if err != nil {
 		return err
 	}

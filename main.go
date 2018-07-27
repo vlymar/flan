@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	var err error = nil
+	var err error
 
 	args := os.Args[1:]
 
