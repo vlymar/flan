@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -9,8 +10,6 @@ import (
 
 /*
 	TODO:
-        - if no flannotation or manpage exists, exit without going into less
-
 	- show historical invocations of command
 	- add $arg$ substitution to flannotations
 	- parse commands and allow jumping to relevant flags in manpage with tab?
@@ -19,6 +18,25 @@ import (
 func flanpage(arg string) error {
 	manOut, manErr := manOutput(arg)
 
+	cmds, err := readFlanFile()
+	if err != nil {
+		return err
+	}
+
+	flannotations, prs := cmds[arg]
+	if prs {
+		err := combineFlanAndManOutput(flannotations, manOut, manErr)
+		if err != nil {
+			return err
+		}
+	} else {
+		return errors.New("no manpage or flannotations found :(")
+	}
+
+	return nil
+}
+
+func combineFlanAndManOutput(flannotations [][]string, manOut []byte, manErr error) error {
 	lessCmd := lessCommand(os.Environ(), os.Stdout, os.Stderr)
 
 	lessIn, err := lessCmd.StdinPipe()
@@ -30,27 +48,20 @@ func flanpage(arg string) error {
 		return err
 	}
 
-	commands, err := ReadFlanFile()
-	if err != nil {
-		return err
-	}
-	flannotations, prs := commands[arg]
-	if prs {
-		lessIn.Write([]byte(color("FLANNOTATIONS:\n\n",
-			bold, yellow)))
+	lessIn.Write([]byte(color("FLANNOTATIONS:\n\n",
+		bold, yellow)))
 
-		for _, flanno := range flannotations {
+	for _, flanno := range flannotations {
 
-			lessIn.Write([]byte("     "))
-			lessIn.Write([]byte(color(flanno[1], yellow)))
-			lessIn.Write([]byte("\n"))
+		lessIn.Write([]byte("     "))
+		lessIn.Write([]byte(color(flanno[1], yellow)))
+		lessIn.Write([]byte("\n"))
 
-			lessIn.Write([]byte("     "))
-			lessIn.Write([]byte(color("$ ", green)))
+		lessIn.Write([]byte("     "))
+		lessIn.Write([]byte(color("$ ", green)))
 
-			lessIn.Write([]byte(color(flanno[0], red)))
-			lessIn.Write([]byte("\n\n"))
-		}
+		lessIn.Write([]byte(color(flanno[0], red)))
+		lessIn.Write([]byte("\n\n"))
 	}
 
 	if manErr != nil {
